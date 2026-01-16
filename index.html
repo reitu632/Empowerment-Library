@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | NGO</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <style>
+        /* === HEADER & NAVIGATION === */
+        .hero {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .hero .logo img { height: 70px; }
+        .searchbar-header { flex: 1; max-width: 500px; margin: 0 20px; }
+        .searchbar-header input {
+            width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem;
+        }
+        .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; }
+        .nav-menu li { padding: 0 15px; }
+        .nav-menu a { color: #2c3e50; text-decoration: none; font-weight: 600; transition: color .3s; }
+        .nav-menu a:hover { color: #3498db; }
+        .hamburger { display: none; cursor: pointer; }
+        .hamburger .bar { width: 25px; height: 3px; background: #2c3e50; margin: 5px 0; transition: .3s; }
+
+        /* === DONATE MODAL === */
+        .donate-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .donate-modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,.3);
+        }
+        .close-donate {
+            position: absolute;
+            top: 15px; right: 20px;
+            font-size: 24px;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .close-donate:hover { color: #000; }
+        .donation-tiers {
+            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 20px 0;
+        }
+        .tier {
+            background: #f8f9fa; border: 2px solid #ddd; border-radius: 10px;
+            padding: 12px 20px; min-width: 80px; font-weight: 600; cursor: pointer;
+            transition: all .3s;
+        }
+        .tier:hover, .tier.selected {
+            background: #3498db; color: #fff; border-color: #3498db;
+            transform: translateY(-3px); box-shadow: 0 5px 15px rgba(52,152,219,.3);
+        }
+        .custom-amount { margin: 20px 0; }
+        .custom-amount input {
+            padding: 12px; width: 160px; border: 1px solid #ddd; border-radius: 6px;
+            text-align: center; font-size: 1rem;
+        }
+        .donate-btn {
+            width: 100%; padding: 14px; background: #27ae60; color: #fff;
+            border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold;
+            cursor: pointer; transition: background .3s;
+        }
+        .donate-btn:hover { background: #2ecc71; }
+        .donate-btn:disabled { background: #95a5a6; cursor: not-allowed; }
+
+        /* === NOTIFICATION === */
+        .notification {
+            position: fixed; top: 90px; right: 20px; padding: 15px 20px;
+            border-radius: 6px; color: #fff; font-weight: 500; z-index: 1000;
+            opacity: 0; transform: translateY(-20px); transition: all .3s;
+        }
+        .notification.show { opacity: 1; transform: translateY(0); }
+        .notification.success { background: #2ecc71; }
+        .notification.error { background: #e74c3c; }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            .nav-menu { position: absolute; top: 80px; right: 0; background: #fff;
+                        flex-direction: column; width: 200px; box-shadow: 0 2px 10px rgba(0,0,0,.1);
+                        display: none; }
+            .nav-menu.active { display: flex; }
+            .searchbar-header { display: none; }
+            .donation-tiers { flex-direction: column; align-items: center; }
+            .tier { width: 80%; }
+        }
+
+        /* === PAGE WRAPPER (push below fixed header) === */
+        .page-wrapper { margin-top: 90px; padding: 20px; }
+        @media (max-width: 768px) { .page-wrapper { margin-top: 70px; } }
+    </style>
+</head>
+<body>
+
+<!-- FIXED HEADER -->
+<header class="hero">
+    <div class="logo">
+        <a href="index.html"><img src="Images/EMP.png" alt="Empowerment Library"></a>
+    </div>
+
+    <div class="searchbar-header">
+        <input type="text" id="searchBar" placeholder="Search book by title, author, or year..." />
+    </div>
+
+    <nav>
+        <ul class="nav-menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="#" id="openDonate">Donate</a></li>
+            <li><a href="join.html" id="authLink">Login <i class="fa fa-sign-in"></i></a></li>
+        </ul>
+        <div class="hamburger">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </div>
+    </nav>
+</header>
+
+<!-- MAIN CONTENT (below header) -->
+<div class="page-wrapper">
+
+    <!-- DONATE BUTTON (on page) -->
+    <div style="text-align:center; margin:30px 0;">
+        <button id="openDonateBtn" class="donate-btn" style="width:auto; padding:12px 30px; font-size:1.1rem;">
+            Donate to Support Us
+        </button>
+    </div>
+
+    <!-- BANNER -->
+    <section class="banner">
+        <div class="banner-content">
+            <h1>Empowering Communities Through Knowledge</h1>
+            <p>
+                Our mission is to provide accessible educational resources, support lifelong learning, and build a brighter future for all. Join us in bridging the gap between opportunity and potential.
+            </p>
+            <a href="about.html" class="banner-btn">Learn More</a>
+        </div>
+    </section>
+
+    <!-- BOOK GRID -->
+    <section class="banner2">
+        <section class="book-grid" id="bookGrid"></section>
+        <button class="close-btn" id="closeBtn" onclick="closeReader()">Close</button>
+        <iframe id="reader" src=""></iframe>
+    </section>
+
+    <!-- PARTNERS -->
+    <section class="banner3">
+        <section class="trusted-partners">
+            <h2>Our Trusted Partners</h2>
+            <div class="partner-logos">
+                <!-- Your partner logos here (unchanged) -->
+                <div class="partner-item">
+                    <a href="https://www.sanlam.co.za/Pages/default.aspx" target="_blank"><img src="Images/SANLAM-removebg-preview.png" alt="SANLAM"></a>
+                    <p>SANLAM</p>
+                </div>
+                <!-- ... all other partners ... -->
+                <div class="partner-item">
+                    <a href="https://www.rosebankcollege.co.za/qualifications/iie-postgraduate-certificate-in-education-in-senior-phase-and-further-education-and-training-teaching-online/?gad_source=1&gad_campaignid=22435771870&gbraid=0AAAAADfhXFGwhd2RM1YMlVlMJwyjNznfJ&gclid=Cj0KCQjwuvrBBhDcARIsAKRrkjcmfTwlYq08lYO0S8NcawlAIgNjHLfAHMTcntOxXsZhGku8w1ojrD8aAi6cEALw_wcB" target="_blank"><img src="Images/ROSEBAK LOGO.png" alt="ROSEBANK COLLAGE"></a>
+                    <p>ROSEBANK COLLAGE</p>
+                </div>
+            </div>
+        </section>
+    </section>
+
+</div>
+
+<!-- DONATION MODAL -->
+<div id="donateModal" class="donate-modal">
+    <div class="donate-modal-content">
+        <span class="close-donate" id="closeModal">&times;</span>
+        <h2>Support Our Library</h2>
+        <p>Every rand helps us grow and keep education free.</p>
+        <div class="donation-tiers">
+            <div class="tier" data-amount="50">R50</div>
+            <div class="tier" data-amount="100">R100</div>
+            <div class="tier" data-amount="250">R250</div>
+            <div class="tier" data-amount="500">R500</div>
+        </div>
+        <div class="custom-amount">
+            <input type="number" id="customAmount" placeholder="Other amount (R)" min="10">
+        </div>
+        <button class="donate-btn" id="donateNowBtn">Donate Now</button>
+    </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notification" class="notification"></div>
+
+<!-- PAYFAST FORM (hidden) -->
+<form id="payfastForm" action="https://www.payfast.co.za/eng/process" method="post" target="_top" style="display:none;">
+    <input type="hidden" name="merchant_id" value="YOUR_MERCHANT_ID">
+    <input type="hidden" name="merchant_key" value="YOUR_MERCHANT_KEY">
+    <input type="hidden" name="return_url" value="https://YOURDOMAIN.com/donate-success.html">
+    <input type="hidden" name="cancel_url" value="https://YOURDOMAIN.com/index.html">
+    <input type="hidden" name="notify_url" value="https://YOURDOMAIN.com/payfast-notify.php">
+    <input type="hidden" name="amount" id="pfAmount">
+    <input type="hidden" name="item_name" value="Empowerment Library Donation">
+</form>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-container">
+        <section class="footer-about">
+            <h3>About Online Library</h3>
+            <p>We provide 24/7 access to a world of knowledge — from eBooks and academic journals to interactive learning and community discussions.</p>
+        </section>
+        <section class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+                <li><a href="join.html">Login</a></li>
+                <li><a href="signup.html">Sign Up</a></li>
+            </ul>
+        </section>
+        <section class="footer-resources">
+            <h3>Resources</h3>
+            <ul>
+                <li><a href="#">Academic Journals</a></li>
+                <li><a href="#">Digital Archives</a></li>
+                <li><a href="#">Learning Portals</a></li>
+            </ul>
+        </section>
+        <section class="footer-newsletter">
+            <h3>Stay Connected</h3>
+            <p>Subscribe to our newsletter to get the latest updates.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required />
+                <button type="submit">Subscribe</button>
+            </form>
+            <div class="social-icons">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </section>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Online Library. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="script.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA7mRqliOrAZbvcS6jpyrOUvG1Oxd-fOVA",
+        authDomain: "empowermentlibrary-4e69a.firebaseapp.com",
+        projectId: "empowermentlibrary-4e69a",
+        storageBucket: "empowermentlibrary-4e69a.appspot.com",
+        messagingSenderId: "86100116391",
+        appId: "1:86100116391:web:68a0766a05d1ea61242c82"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Elements
+    const modal = document.getElementById('donateModal');
+    const openBtns = [document.getElementById('openDonate'), document.getElementById('openDonateBtn')];
+    const closeBtn = document.getElementById('closeModal');
+    const tiers = document.querySelectorAll('.tier');
+    const customInput = document.getElementById('customAmount');
+    const donateNowBtn = document.getElementById('donateNowBtn');
+    const notification = document.getElementById('notification');
+    const authLink = document.getElementById('authLink');
+    const payfastForm = document.getElementById('payfastForm');
+    const pfAmount = document.getElementById('pfAmount');
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+
+    let selectedAmount = 0;
+
+    // Open Modal
+    openBtns.forEach(btn => btn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'flex';
+    }));
+
+    // Close Modal
+    closeBtn?.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    // Tier Selection
+    tiers.forEach(t => t.addEventListener('click', () => {
+        tiers.forEach(x => x.classList.remove('selected'));
+        t.classList.add('selected');
+        selectedAmount = parseInt(t.dataset.amount);
+        customInput.value = '';
+    }));
+
+    // Custom Amount
+    customInput.addEventListener('input', () => {
+        tiers.forEach(t => t.classList.remove('selected'));
+        selectedAmount = parseFloat(customInput.value) || 0;
+    });
+
+    // Donate
+    donateNowBtn.addEventListener('click', async () => {
+        if (selectedAmount < 10) {
+            showNotification('Please select at least R10.', 'error');
+            return;
+        }
+
+        donateNowBtn.disabled = true;
+        donateNowBtn.textContent = 'Processing...';
+
+        try {
+            await addDoc(collection(db, 'donations'), {
+                amount: selectedAmount,
+                currency: 'ZAR',
+                timestamp: serverTimestamp(),
+                status: 'pending',
+                source: 'index-modal'
+            });
+
+            pfAmount.value = selectedAmount.toFixed(2);
+            payfastForm.submit();
+
+        } catch (e) {
+            console.error(e);
+            showNotification('Donation failed. Try again.', 'error');
+            donateNowBtn.disabled = false;
+            donateNowBtn.textContent = 'Donate Now';
+        }
+    });
+
+    // Notification
+    function showNotification(msg, type) {
+        notification.textContent = msg;
+        notification.className = `notification ${type} show`;
+        setTimeout(() => notification.classList.remove('show'), 4000);
+    }
+
+    // Auth State
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            authLink.innerHTML = 'Log Out <i class="fa fa-sign-out"></i>';
+            authLink.href = '#';
+            authLink.onclick = () => signOut(auth).then(() => location.reload());
+        } else {
+            authLink.innerHTML = 'Login <i class="fa fa-sign-in"></i>';
+            authLink.href = 'join.html';
+        }
+    });
+
+    // Mobile Menu
+    hamburger?.addEventListener('click', () => navMenu.classList.toggle('active'));
+
+    // Book Functions (unchanged)
+    const books = [ /* your books array */ ];
+    function displayBooks(filter = "") { /* your function */ }
+    function readBook(pdfUrl) { /* your function */ }
+    function closeReader() { /* your function */ }
+
+    document.getElementById("searchBar").addEventListener("input", e => displayBooks(e.target.value));
+    displayBooks();
+</script>
+
+</body>
+</html>

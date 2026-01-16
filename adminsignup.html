@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Sign Up</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url("Images/grunge-paint-background.jpg");
+      background-color: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .login-wrapper {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    .login-wrapper h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333333;
+    }
+
+    .login-wrapper input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .login-wrapper button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-wrapper button:hover {
+      background-color: #0056b3;
+    }
+
+    .login-wrapper button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    .login-wrapper .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .login-wrapper .links a {
+      display: block;
+      color: #007bff;
+      text-decoration: none;
+      margin-top: 8px;
+      font-size: 0.95rem;
+    }
+
+    .login-wrapper .links a:hover {
+      text-decoration: underline;
+    }
+
+    .login-wrapper .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .login-wrapper .success {
+      color: green;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .formlogo {
+      text-align: center;
+    }
+
+    .formlogo img {
+      width: 25%;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="formlogo"><img src="Images/EMP.png" alt="formlogo"></div>
+    <h2>Admin Sign Up</h2>
+    <input type="text" id="name" placeholder="Full Name" />
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+    <button id="signupBtn" onclick="signUp()">Sign Up</button>
+    <div class="error" id="errorMsg"></div>
+    <div class="success" id="successMsg"></div>
+
+    <div class="links">
+      <a href="login.html">Already have an account? Login</a>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7mRqliOrAZbvcS6jpyrOUvG1Oxd-fOVA",
+      authDomain: "empowermentlibrary-4e69a.firebaseapp.com",
+      projectId: "empowermentlibrary-4e69a",
+      storageBucket: "empowermentlibrary-4e69a.appspot.com",
+      messagingSenderId: "86100116391",
+      appId: "1:86100116391:web:68a0766a05d1ea61242c82",
+      measurementId: "G-0T558LGG20"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Sign up function
+    function signUp() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const errorMsg = document.getElementById('errorMsg');
+      const successMsg = document.getElementById('successMsg');
+      const signupBtn = document.getElementById('signupBtn');
+
+      // Reset messages
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+
+      // Validation
+      if (!name || !email || !password || !confirmPassword) {
+        errorMsg.textContent = 'Please fill in all fields';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorMsg.textContent = 'Passwords do not match';
+        return;
+      }
+
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password should be at least 6 characters';
+        return;
+      }
+
+      // Disable button during processing
+      signupBtn.disabled = true;
+      signupBtn.textContent = 'Creating Account...';
+
+      // Create user with Firebase Auth
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          // User created successfully
+          const user = userCredential.user;
+          
+          // Add admin data to Firestore
+          return db.collection('admin').doc(user.uid).set({
+            name: name,
+            email: email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            role: 'admin'
+          });
+        })
+        .then(() => {
+          successMsg.textContent = 'Admin account created successfully!';
+          
+          document.getElementById('name').value = '';
+          document.getElementById('email').value = '';
+          document.getElementById('password').value = '';
+          document.getElementById('confirmPassword').value = '';
+        
+          
+          if (error.code === 'auth/email-already-in-use') {
+            errorMessage = 'This email is already registered.';
+          } else if (error.code === 'auth/invalid-email') {
+            errorMessage = 'Invalid email address.';
+          } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'Password is too weak.';
+          }
+          
+          errorMsg.textContent = errorMessage;
+        })
+        .finally(() => {
+         
+          signupBtn.disabled = false;
+          signupBtn.textContent = 'Sign Up';
+        });
+    }
+
+    // Allow form submission with Enter key
+    document.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        signUp();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Books | Admin</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; margin: 0; }
+    .container { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: #2c3e50; color: white; padding: 2rem 1rem; position: fixed; height: 100%; }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar ul li { margin: 1rem 0; }
+    .sidebar ul li a { color: white; text-decoration: none; font-weight: 600; display: flex; align-items: center; padding: 12px; border-radius: 8px; transition: 0.3s; }
+    .sidebar ul li a i { margin-right: 10px; }
+    .sidebar ul li a:hover, .sidebar ul li a.active { background: #3498db; }
+    .main-content { flex: 1; margin-left: 250px; padding: 2rem; }
+
+    .page-header { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+    .page-title { font-size: 1.8rem; color: #2c3e50; margin: 0; }
+
+    .upload-card, .books-list { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #2c3e50; }
+    .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    .btn-primary { background: #3498db; color: white; }
+    .btn-primary:hover { background: #2980b9; }
+    .btn-danger { background: #e74c3c; color: white; }
+    .btn-danger:hover { background: #c0392b; }
+
+    .book-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #eee; }
+    .book-item:last-child { border-bottom: none; }
+    .book-info h4 { margin: 0; color: #2c3e50; }
+    .book-info p { margin: 0.25rem 0 0; color: #7f8c8d; font-size: 0.9rem; }
+    .loading { text-align: center; padding: 2rem; color: #7f8c8d; }
+
+    .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600; z-index: 1000; transform: translateX(120%); transition: 0.4s; }
+    .toast.show { transform: translateX(0); }
+    .toast-success { background: #27ae60; }
+    .toast-error { background: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <ul>
+        <li><a href="admin.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+        <li><a href="createEvent.html"><i class="fa fa-calendar"></i> Events</a></li>
+        <li><a href="manageContact.html"><i class="fas fa-address-book"></i> Contact</a></li>
+        <li><a href="createBookClub.html"><i class="fa fa-book"></i> Book Club</a></li>
+        <li><a href="manageBooks.html" class="active"><i class="fas fa-book-medical"></i> Manage Books</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Manage PDF Books</h1>
+      </div>
+
+      <!-- Upload Form -->
+      <div class="upload-card">
+        <h3>Upload New Book (PDF)</h3>
+        <form id="uploadForm">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="bookTitle" required />
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" id="bookAuthor" required />
+          </div>
+          <div class="form-group">
+            <label>Genre</label>
+            <select id="bookGenre">
+              <option value="Fiction">Fiction</option>
+              <option value="Non-Fiction">Non-Fiction</option>
+              <option value="Science">Science</option>
+              <option value="Business">Business</option>
+              <option value="Self-Help">Self-Help</option>
+              <option value="Biography">Biography</option>
+              <option value="Romance">Romance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>PDF File</label>
+            <input type="file" id="pdfFile" accept=".pdf" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Upload Book</button>
+        </form>
+      </div>
+
+      <!-- Books List -->
+      <div class="books-list">
+        <h3>Uploaded Books</h3>
+        <div id="booksContainer">
+          <div class="loading">Loading books...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-storage.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7mRqliOrAZbvcS6jpyrOUvG1Oxd-fOVA",
+      authDomain: "empowermentlibrary-4e69a.firebaseapp.com",
+      projectId: "empowermentlibrary-4e69a",
+      storageBucket: "empowermentlibrary-4e69a.appspot.com",
+      messagingSenderId: "86100116391",
+      appId: "1:86100116391:web:68a0766a05d1ea61242c82"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+    const auth = getAuth(app);
+
+    const uploadForm = document.getElementById("uploadForm");
+    const booksContainer = document.getElementById("booksContainer");
+    const toast = document.getElementById("toast");
+
+    // === Check Admin ===
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "admin-login.html";
+      }
+      // Optionally: check if user is admin via custom claim
+      // user.getIdTokenResult().then(idToken => { if (!idToken.claims.admin) redirect; })
+    });
+
+    // === Upload Book ===
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("bookTitle").value.trim();
+      const author = document.getElementById("bookAuthor").value.trim();
+      const genre = document.getElementById("bookGenre").value;
+      const file = document.getElementById("pdfFile").files[0];
+
+      if (!file || file.type !== "application/pdf") {
+        showToast("Please select a valid PDF file.", "error");
+        return;
+      }
+
+      try {
+        // Upload PDF
+        const fileRef = ref(storage, `books/${Date.now()}_${file.name}`);
+        await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(fileRef);
+
+        // Save metadata
+        await addDoc(collection(db, "books"), {
+          title,
+          author,
+          genre,
+          pdfUrl: downloadURL,
+          uploadedAt: new Date(),
+          fileName: file.name
+        });
+
+        showToast("Book uploaded successfully!", "success");
+        uploadForm.reset();
+        loadBooks();
+      } catch (error) {
+        console.error(error);
+        showToast("Failed to upload book.", "error");
+      }
+    });
+
+    // === Load Books ===
+    async function loadBooks() {
+      try {
+        booksContainer.innerHTML = '<div class="loading">Loading books...</div>';
+        const snapshot = await getDocs(collection(db, "books"));
+        
+        if (snapshot.empty) {
+          booksContainer.innerHTML = '<p style="text-align:center; color:#7f8c8d;">No books uploaded yet.</p>';
+          return;
+        }
+
+        booksContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const book = doc.data();
+          const div = document.createElement("div");
+          div.className = "book-item";
+          div.innerHTML = `
+            <div class="book-info">
+              <h4>${book.title}</h4>
+              <p><strong>Author:</strong> ${book.author} | <strong>Genre:</strong> ${book.genre}</p>
+              <p><a href="${book.pdfUrl}" target="_blank" style="color:#3498db;">Open PDF</a></p>
+            </div>
+            <button class="btn btn-danger" onclick="deleteBook('${doc.id}', '${book.pdfUrl}')">Delete</button>
+          `;
+          booksContainer.appendChild(div);
+        });
+      } catch (error) {
+        console.error(error);
+        booksContainer.innerHTML = '<p class="error">Failed to load books.</p>';
+      }
+    }
+
+    // === Delete Book ===
+    window.deleteBook = async (docId, pdfUrl) => {
+      if (!confirm("Delete this book permanently?")) return;
+
+      try {
+        // Delete from Storage
+        const fileRef = ref(storage, pdfUrl);
+        await deleteObject(fileRef);
+
+        // Delete from Firestore
+        await deleteDoc(doc(db, "books", docId));
+
+        showToast("Book deleted successfully.", "success");
+        loadBooks();
+      } catch (error) {
+        console.error(error);
+        showToast("Failed to delete book.", "error");
+      }
+    };
+
+    // === Toast ===
+    function showToast(message, type) {
+      toast.textContent = message;
+      toast.className = `toast toast-${type} show`;
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    // === Init ===
+    loadBooks();
+  </script>
+</body>
+</html>

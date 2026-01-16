@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | Empowerment Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <style>
+        /* === FIXED HEADER & NAVIGATION === */
+        .hero {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            height: 80px;
+        }
+        .hero .logo img { height: 60px; }
+        .searchbar-header {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 20px;
+        }
+        .searchbar-header input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border .3s;
+        }
+        .searchbar-header input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,.2);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-menu li {
+            padding: 0 15px;
+        }
+        .nav-menu a {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color .3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .nav-menu a:hover {
+            color: #3498db;
+        }
+        .nav-menu a.active {
+            color: #3498db;
+            font-weight: 700;
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .hamburger .bar {
+            width: 25px;
+            height: 3px;
+            background: #2c3e50;
+            border-radius: 3px;
+            transition: .3s;
+        }
+
+        /* === PAGE WRAPPER === */
+        .page-wrapper {
+            margin-top: 90px;
+            padding: 20px;
+            min-height: calc(100vh - 90px);
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 992px) {
+            .searchbar-header { display: none; }
+        }
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .nav-menu {
+                position: absolute;
+                top: 80px; right: 0;
+                background: #fff;
+                flex-direction: column;
+                width: 220px;
+                box-shadow: 0 4px 15px rgba(0,0,0,.1);
+                border-radius: 0 0 0 12px;
+                display: none;
+                overflow: hidden;
+            }
+            .nav-menu.active { display: flex; }
+            .nav-menu li {
+                padding: 0;
+                border-bottom: 1px solid #eee;
+            }
+            .nav-menu a {
+                padding: 15px 20px;
+                width: 100%;
+            }
+            .hero { padding: 10px 15px; }
+            .page-wrapper { margin-top: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FIXED HEADER -->
+    <header class="hero">
+        <div class="logo">
+            <a href="index.html"><img src="Images/EMP.png" alt="Empowerment Library"></a>
+        </div>
+
+        <div class="searchbar-header">
+            <input type="text" id="searchBar" placeholder="Search book by title, author, or year..." />
+        </div>
+
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="donate.html">Donate</a></li>
+                <li><a href="join.html">Login <i class="fa fa-sign-in"></i></a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div class="page-wrapper">
+
+        <section class="contact-section">
+            <div class="contact-container">
+                <h2>Contact Us Today</h2>
+
+                <div class="contact-flex">
+                    <div class="map-container">
+                        <h3>Empowerment Online Library</h3>
+                        <p>The Empowerment Online Library provides accessible digital resources to empower communities through knowledge. We offer a rich collection of e-books, research materials, and educational tools online.</p>
+
+                        <h4>Contact Info</h4>
+                        <p>Phone: +27 15 123 4567</p>
+                        <p>Email: info@empowermentlib.co.za</p>
+
+                        <h4>Connect With Us</h4>
+                        <div class="social-icons">
+                            <a href="https://wa.me/27151234567" target="_blank" aria-label="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="https://www.tiktok.com/@yourprofile" target="_blank" aria-label="TikTok">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                            <a href="https://instagram.com/yourprofile" target="_blank" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://twitter.com/yourprofile" target="_blank" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                        <p class="bottom-p">We're here to help. Reach out with questions, suggestions, or collaboration opportunities.</p>
+                    </div>
+
+                    <form class="contact-form" action="#" method="post">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="Your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="Your email address" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Your message..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="contact-btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="trusted-partners">
+            <h2>Our Trusted Partners</h2>
+            <div class="partner-logos">
+                <div class="partner-item">
+                    <a href="https://www.sanlam.co.za/Pages/default.aspx" target="_blank"><img src="Images/SANLAM-removebg-preview.png" alt="SANLAM"></a>
+                    <p>SANLAM</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.phalaphalawildlife.co.za/" target="_blank"><img src="Images/PHALAPHALA_WILDLIFE-removebg-preview.png" alt="PHALA PHALA"></a>
+                    <p>PHALA PHALA</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.capitecbank.co.za/personal/insure/life-cover/?gad_source=1&gad_campaignid=21475709723&gbraid=0AAAAAC2kqe9rKz8gKDfx6r_YTt6aRAvoY&gclid=Cj0KCQjwuvrBBhDcARIsAKRrkjfFxZ4oAMj080nLlwl2RNd3NogM0sUfeua_a4Tc3I2zIPqneoZGaEYaAnDYEALw_wcB" target="_blank"><img src="Images/CAPITEC-removebg-preview.png" alt="CAPITEC"></a>
+                    <p>CAPITEC</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.discovery.co.za/" target="_blank"><img src="Images/DISCOVERY_BANK-removebg-preview.png" alt="DISCOVERY"></a>
+                    <p>DISCOVERY</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.education.gov.za/" target="_blank"><img src="Images/RSA-Basic-Education-LOGO-removebg-preview.png" alt="Department Of Education"></a>
+                    <p>Department Of Education</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.motsepefoundation.org/" target="_blank"><img src="Images/MOTSEPE_FOUNDATION_LOGO-removebg-preview.png" alt="MOTSEPE FOUNDATION"></a>
+                    <p>MOTSEPE FOUNDATION</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.mercedes-benz.co.za/#" target="_blank"><img src="Images/MERCEDES_BENZ-removebg-preview.png" alt="MERCEDES BENZ"></a>
+                    <p>MERCEDES BENZ</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.iie.ac.za/" target="_blank"><img src="Images/IIE_LOGO-removebg-preview.png" alt="IIE"></a>
+                    <p>IIE</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.oldmutual.co.za/personal/solutions/?ds_rl=1271875&ds_rl=1272599&gad_source=1&gad_campaignid=2034182398&gbraid=0AAAAACvZh0X5rBzUton0C9ViCr2HehcZe&gclid=Cj0KCQjwuvrBBhDcARIsAKRrkjdZLpg1sqZ6STGN4dNG8J2v6wpS3p08IcanlfgxQAWwHo8OvmSxaKMaAuIOEALw_wcB&gclsrc=aw.ds" target="_blank"><img src="Images/OLD_MUTUAL-removebg-preview.png" alt="OLD MUTUAL"></a>
+                    <p>OLD MUTUAL</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.tymebank.co.za/" target="_blank"><img src="Images/TYMEBANK-removebg-preview.png" alt="TYMEBANK"></a>
+                    <p>TYMEBANK</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.standardbank.co.za/southafrica/personal/products-and-services/grow-your-money/savings-and-investment/our-accounts/puresave-savings-account?cid=WPS_BCmgC&gad_source=1&gad_campaignid=18957342688&gbraid=0AAAAApEgRgLDSoytlkaFfSAxT2htLBvso&gclid=Cj0KCQjwuvrBBhDcARIsAKRrkjcUc7mHz9zgYZMCNmGc5mjDWOdjrYSze2CB2blnTygb-BGOtinyI1caAmC0EALw_wcB&gclsrc=aw.ds" target="_blank"><img src="Images/STANDARD BANK.png" alt="STANDARD BANK"></a>
+                    <p>STANDARD BANK</p>
+                </div>
+                <div class="partner-item">
+                    <a href="https://www.rosebankcollege.co.za/qualifications/iie-postgraduate-certificate-in-education-in-senior-phase-and-further-education-and-training-teaching-online/?gad_source=1&gad_campaignid=22435771870&gbraid=0AAAAADfhXFGwhd2RM1YMlVlMJwyjNznfJ&gclid=Cj0KCQjwuvrBBhDcARIsAKRrkjcmfTwlYq08lYO0S8NcawlAIgNjHLfAHMTcntOxXsZhGku8w1ojrD8aAi6cEALw_wcB" target="_blank"><img src="Images/ROSEBAK LOGO.png" alt="ROSEBANK COLLEGE"></a>
+                    <p>ROSEBANK COLLEGE</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <section class="footer-about">
+                <h3>About Online Library</h3>
+                <p>We provide 24/7 access to a world of knowledge — from eBooks and academic journals to interactive learning and community discussions. Our mission is to empower readers, researchers, and students everywhere.</p>
+            </section>
+            <section class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="join.html">Login</a></li>
+                    <li><a href="signup.html">Sign Up</a></li>
+                </ul>
+            </section>
+            <section class="footer-resources">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">Academic Journals</a></li>
+                    <li><a href="#">Digital Archives</a></li>
+                    <li><a href="#">Learning Portals</a></li>
+                    <li><a href="#">Librarian Services</a></li>
+                    <li><a href="#">Citation Guides</a></li>
+                </ul>
+            </section>
+            <section class="footer-newsletter">
+                <h3>Stay Connected</h3>
+                <p>Subscribe to our newsletter to get the latest updates, book releases, and educational tips.</p>
+                <form class="newsletter-form" aria-label="Newsletter Signup">
+                    <input type="email" placeholder="Enter your email" aria-label="Email address" required />
+                    <button type="submit">Subscribe</button>
+                </form>
+                <div class="social-icons" aria-label="Social Media">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </section>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Online Library. All rights reserved. |
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Use</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script src="script.js"></script>
+
+    <!-- CONTACT FORM SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyB8a32KL_O0WmrXjxrnqU42BeFx0G9OS40",
+          authDomain: "empower-f98ac.firebaseapp.com",
+          projectId: "empower-f98ac",
+          storageBucket: "empower-f98ac.appspot.com",
+          messagingSenderId: "754416398690",
+          appId: "1:754416398690:web:0fdb0088dbce13f58cfc3b",
+          measurementId: "G-8P2WHKED8H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const contactForm = document.querySelector('.contact-form');
+        const errorMsg = document.createElement('div');
+        errorMsg.id = 'contactErrorMsg';
+        errorMsg.style.color = 'red';
+        errorMsg.style.marginTop = '10px';
+        contactForm.appendChild(errorMsg); 
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.textContent = ''; 
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (!name || !email || !message) {
+                errorMsg.textContent = 'Please fill out all fields.';
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'contacts'), {
+                    name: name,
+                    email: email,
+                    message: message,
+                    timestamp: new Date()
+                });
+
+                errorMsg.style.color = 'green';
+                errorMsg.textContent = 'Message sent successfully! We will get back to you soon.';
+                contactForm.reset();
+
+                setTimeout(() => {
+                    errorMsg.textContent = '';
+                }, 5000); 
+
+            } catch (error) {
+                console.error('Error saving contact message:', error);
+                errorMsg.textContent = 'Failed to send message: ' + error.message;
+            }
+        });
+    </script>
+
+    <!-- NAVIGATION SCRIPT -->
+    <script>
+        // Hamburger Menu Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

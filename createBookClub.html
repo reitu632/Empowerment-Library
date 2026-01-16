@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Club Admin | Empowerment Library</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            margin-top: 150px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            height: calc(100vh - 80px);
+            position: fixed;
+            left: 0;
+            top: 135px;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 5px;
+            margin: 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            margin: 1.5rem 0 1rem 0;
+            color: #2c3e50;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            align-items: center;
+            border: 2px solid transparent;
+        }
+
+        .sidebar ul li a i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 25px;
+            text-align: center;
+        }
+
+        .sidebar ul li a:hover {
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            color: white;
+            transform: translateX(10px);
+            border-color: #3498db;
+        }
+
+        .sidebar ul li a.active {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            margin-left: 250px;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .add-club {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .add-club input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            flex: 1;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .add-club input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .add-club button {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .add-club button:hover {
+            background-color: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            margin: 2rem auto;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            border: 1px solid #e1e1e1;
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background: #3498db;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #f1f8ff;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin: 2px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .edit-btn {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #e67e22;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .active {
+            background-color: #2ecc71;
+        }
+
+        .inactive {
+            background-color: #e74c3c;
+        }
+
+        .member-count {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+            line-height: 25px;
+            margin-left: 5px;
+            font-size: 0.8rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .notification {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background-color: #2ecc71;
+        }
+
+        .notification.error {
+            background-color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin-top: 70px;
+            }
+            
+            .sidebar {
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                top: 70px;
+                height: calc(100vh - 70px);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .add-club {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                right: 0;
+                background-color: #2c3e50;
+                width: 200px;
+                border-radius: 0 0 0 10px;
+                z-index: 100;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="hero">
+            <div class="logo">
+                <a href="index.html"><img src="Images/EMP.png" alt=""></a>
+            </div>
+        
+            <nav>
+                <div class="navlinks">
+                    <ul class="nav-menu">
+                        <li style="padding: 15px;"><a class="nav-item" href="admin-profile-manage.html">Manage</a></li>
+                        <li style="padding: 15px;"><a class="nav-item" href="admin-login.html">Logout <i class="fa fa-sign-in" aria-hidden="true"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="createEvent.html" id="manageEvents"><i class="fa fa-calendar"></i>Events</a></li>
+                <li><a href="admincontact.html" id="manageContact"><i class="fas fa-address-book"></i>Contact</a></li>
+                <li><a href="createBookClub.html" id="manageBookClub" class="active"><i class="fa fa-book"></i>Book Club</a></li>
+                <li><a href="admin.html"><i class="fas fa-chart-line"></i>Analytics</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1 class="page-title">Book Club Management</h1>
+            
+            <div class="add-club">
+                <input type="text" id="newClubName" placeholder="Enter New Club Name">
+                <button onclick="addClub()">Add Club</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Club Name</th>
+                        <th>Created At</th>
+                        <th>Members</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clubTable">
+                    <tr>
+                        <td colspan="4" class="loading">Loading book clubs...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+    </div>
+
+    <div id="notification" class="notification"></div>
+    
+    <script src="script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import {
+          getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, Timestamp
+        } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyA7mRqliOrAZbvcS6jpyrOUvG1Oxd-fOVA",
+          authDomain: "empowermentlibrary-4e69a.firebaseapp.com",
+          projectId: "empowermentlibrary-4e69a",
+          storageBucket: "empowermentlibrary-4e69a.appspot.com",
+          messagingSenderId: "86100116391",
+          appId: "1:86100116391:web:68a0766a05d1ea61242c82",
+          measurementId: "G-0T558LGG20"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const clubTable = document.getElementById("clubTable");
+        const notification = document.getElementById("notification");
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchClubs();
+            
+            // Hamburger menu for mobile
+            hamburger.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        });
+
+        async function fetchClubs() {
+          clubTable.innerHTML = '<tr><td colspan="4" class="loading">Loading book clubs...</td></tr>';
+
+          try {
+            const clubsSnapshot = await getDocs(collection(db, "club"));
+            
+            // Get users for member mapping
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            const usersMap = {};
+            usersSnapshot.forEach(doc => {
+              usersMap[doc.data().email] = doc.data().username;
+            });
+
+            clubTable.innerHTML = "";
+
+            if (clubsSnapshot.empty) {
+              clubTable.innerHTML = '<tr><td colspan="4" class="loading">No book clubs found. Create your first one!</td></tr>';
+              return;
+            }
+
+            clubsSnapshot.forEach(docSnap => {
+              const club = docSnap.data();
+              const memberList = (club.members || []).map(email => usersMap[email] ? `${usersMap[email]} (${email})` : email).join("<br>") || "No members yet";
+              const memberCount = club.members ? club.members.length : 0;
+
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${club.name}</td>
+                <td>${club.createdAt.toDate().toLocaleString()}</td>
+                <td>
+                  <span class="member-count">${memberCount}</span>
+                  <div style="margin-top: 5px;">${memberList}</div>
+                </td>
+                <td>
+                  <button class="edit-btn" onclick="editClub('${docSnap.id}', '${club.name}')">Edit</button>
+                  <button class="delete-btn" onclick="deleteClub('${docSnap.id}', '${club.name}')">Delete</button>
+                </td>
+              `;
+              clubTable.appendChild(tr);
+            });
+          } catch (error) {
+            console.error("Error fetching clubs:", error);
+            clubTable.innerHTML = '<tr><td colspan="4" class="loading">Error loading book clubs. Please try again.</td></tr>';
+          }
+        }
+
+        async function addClub() {
+          const name = document.getElementById("newClubName").value.trim();
+          if (!name) return showNotification("Please enter a club name", "error");
+
+          try {
+            await addDoc(collection(db, "club"), {
+              name,
+              createdAt: Timestamp.now(),
+              members: []
+            });
+
+            document.getElementById("newClubName").value = "";
+            showNotification("Book club added successfully!", "success");
+            fetchClubs();
+          } catch (error) {
+            console.error("Error adding club:", error);
+            showNotification("Error adding club. Please try again.", "error");
+          }
+        }
+
+        async function deleteClub(clubId, clubName) {
+          if (!confirm(`Are you sure you want to delete "${clubName}"? This action cannot be undone.`)) return;
+
+          try {
+            await deleteDoc(doc(db, "club", clubId));
+
+            
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            usersSnapshot.forEach(async userDoc => {
+              const data = userDoc.data();
+              if (data.joinedClubs?.includes(clubName)) {
+                const updatedClubs = data.joinedClubs.filter(c => c !== clubName);
+                await updateDoc(doc(db, "users", userDoc.id), { joinedClubs: updatedClubs });
+              }
+            });
+
+            showNotification("Book club deleted successfully!", "success");
+            fetchClubs();
+          } catch (error) {
+            console.error("Error deleting club:", error);
+            showNotification("Error deleting club. Please try again.", "error");
+          }
+        }
+
+        async function editClub(clubId, oldName) {
+          const newName = prompt("Enter new club name:", oldName);
+          if (!newName || newName.trim() === "") return;
+
+          try {
+            await updateDoc(doc(db, "club", clubId), { name: newName });
+
+            
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            usersSnapshot.forEach(async userDoc => {
+              const data = userDoc.data();
+              if (data.joinedClubs?.includes(oldName)) {
+                const updatedClubs = data.joinedClubs.map(c => c === oldName ? newName : c);
+                await updateDoc(doc(db, "users", userDoc.id), { joinedClubs: updatedClubs });
+              }
+            });
+
+            showNotification("Book club updated successfully!", "success");
+            fetchClubs();
+          } catch (error) {
+            console.error("Error updating club:", error);
+            showNotification("Error updating club. Please try again.", "error");
+          }
+        }
+
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        window.onload = fetchClubs;
+        window.addClub = addClub;
+        window.deleteClub = deleteClub;
+        window.editClub = editClub;
+    </script>
+</body>
+</html>

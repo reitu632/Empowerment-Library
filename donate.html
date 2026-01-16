@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Donate | Empowerment Library</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  <style>
+    /* -------------------------------------------------
+       BASIC PAGE STYLES (unchanged)
+       ------------------------------------------------- */
+    body {font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f5f7fa;margin:0;padding:0;color:#333;}
+    .hero{margin-top:0;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);position:fixed;top:0;left:0;right:0;z-index:1000;}
+    .hero .logo img{height:80px;}
+    .nav-menu{display:flex;list-style:none;margin:0;padding:0;}
+    .nav-menu li{padding:15px;}
+    .nav-menu a{color:#2c3e50;text-decoration:none;font-weight:600;transition:color .3s;}
+    .nav-menu a:hover{color:#3498db;}
+    .hamburger{display:none;cursor:pointer;}
+    .hamburger .bar{width:25px;height:3px;background:#2c3e50;margin:5px 0;transition:.3s;}
+
+    /* -------------------------------------------------
+       FIX – push content below the fixed header
+       ------------------------------------------------- */
+    .page-wrapper {
+      margin-top: 90px;               /* desktop */
+    }
+    @media (max-width:768px) {
+      .page-wrapper {margin-top:70px;} /* mobile */
+    }
+
+    .container{max-width:1200px;margin:0 auto;padding:0 20px;}
+    .donation-card{background:#fff;padding:30px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1);max-width:700px;margin:0 auto;}
+    .donation-header{text-align:center;margin-bottom:30px;}
+    .donation-header h1{font-size:2.2rem;color:#2c3e50;margin-bottom:10px;}
+    .donation-header p{color:#7f8c8d;font-size:1.1rem;}
+    .donation-tiers{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;margin-bottom:25px;}
+    .tier{background:#f8f9fa;border:2px solid #ddd;border-radius:10px;padding:15px 20px;text-align:center;cursor:pointer;transition:all .3s;min-width:100px;font-weight:600;}
+    .tier:hover,.tier.selected{background:#3498db;color:#fff;border-color:#3498db;transform:translateY(-3px);box-shadow:0 5px 15px rgba(52,152,219,.3);}
+    .custom-amount{margin:20px 0;text-align:center;}
+    .custom-amount input{padding:12px;width:150px;border:1px solid #ddd;border-radius:6px;font-size:1rem;text-align:center;}
+    .custom-amount input:focus{border-color:#3498db;outline:none;box-shadow:0 0 0 2px rgba(52,152,219,.2);}
+    .donate-btn{display:block;width:100%;padding:14px;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:1.1rem;font-weight:bold;cursor:pointer;transition:background .3s;}
+    .donate-btn:hover{background:#2ecc71;}
+    .donate-btn:disabled{background:#95a5a6;cursor:not-allowed;}
+    .notification{position:fixed;top:90px;right:20px;padding:15px 20px;border-radius:6px;color:#fff;font-weight:500;z-index:1000;opacity:0;transform:translateY(-20px);transition:all .3s;}
+    .notification.show{opacity:1;transform:translateY(0);}
+    .notification.success{background:#2ecc71;}
+    .notification.error{background:#e74c3c;}
+
+    @media (max-width:768px){
+      .hamburger{display:block;}
+      .nav-menu{flex-direction:column;position:absolute;top:80px;right:0;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.1);width:200px;display:none;}
+      .nav-menu.active{display:flex;}
+      .donation-tiers{flex-direction:column;align-items:center;}
+      .tier{width:80%;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- PUBLIC HEADER (fixed) -->
+<header class="hero">
+  <div class="logo"><a href="index.html"><img src="Images/EMP.png" alt="Empowerment Library"></a></div>
+  <nav>
+    <ul class="nav-menu">
+      <li><a href="book.html">Books</a></li>
+      <li><a href="event.html">Events</a></li>
+      <li><a href="librarycontact.html">Contact</a></li>
+      <li><a href="bookClub.html">Book Clubs</a></li>
+      <li><a href="donate.html" class="active">Donate</a></li>
+      <li><a href="join.html" id="authLink">Log In <i class="fa fa-sign-in"></i></a></li>
+    </ul>
+    <div class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+  </nav>
+</header>
+
+<!-- -------------------------------------------------
+     NEW WRAPPER – pushes everything below the header
+     ------------------------------------------------- -->
+<div class="page-wrapper">
+  <div class="container">
+    <section class="donation-card">
+      <div class="donation-header">
+        <h1>Support Our Library</h1>
+        <p>Every rand helps us buy new books, host events, and keep the library free for everyone.</p>
+      </div>
+
+      <div class="donation-tiers">
+        <div class="tier" data-amount="50">R50</div>
+        <div class="tier" data-amount="100">R100</div>
+        <div class="tier" data-amount="250">R250</div>
+        <div class="tier" data-amount="500">R500</div>
+      </div>
+
+      <div class="custom-amount">
+        <input type="number" id="customAmount" placeholder="Other amount (R)" min="10">
+      </div>
+
+      <button class="donate-btn" id="donateBtn">Donate Now</button>
+    </section>
+  </div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<!-- PayFast (hidden) -->
+<form id="payfastForm" action="https://www.payfast.co.za/eng/process" method="post" target="_top" style="display:none;">
+  <input type="hidden" name="merchant_id" value="YOUR_MERCHANT_ID">
+  <input type="hidden" name="merchant_key" value="YOUR_MERCHANT_KEY">
+  <input type="hidden" name="return_url" value="https://YOURDOMAIN.com/donate-success.html">
+  <input type="hidden" name="cancel_url" value="https://YOURDOMAIN.com/donate.html">
+  <input type="hidden" name="notify_url" value="https://YOURDOMAIN.com/payfast-notify.php">
+  <input type="hidden" name="amount" id="pfAmount">
+  <input type="hidden" name="item_name" value="Empowerment Library Donation">
+  <input type="hidden" name="email_confirmation" value="1">
+  <input type="hidden" name="confirmation_address" value="admin@empowermentlib.co.za">
+</form>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7mRqliOrAZbvcS6jpyrOUvG1Oxd-fOVA",
+    authDomain: "empowermentlibrary-4e69a.firebaseapp.com",
+    projectId: "empowermentlibrary-4e69a",
+    storageBucket: "empowermentlibrary-4e69a.appspot.com",
+    messagingSenderId: "86100116391",
+    appId: "1:86100116391:web:68a0766a05d1ea61242c82"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const tiers = document.querySelectorAll('.tier');
+  const customInput = document.getElementById('customAmount');
+  const donateBtn = document.getElementById('donateBtn');
+  const notification = document.getElementById('notification');
+  const authLink = document.getElementById('authLink');
+  const payfastForm = document.getElementById('payfastForm');
+  const pfAmount = document.getElementById('pfAmount');
+
+  let selectedAmount = 0;
+
+  /* ----- Auth UI ----- */
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      authLink.innerHTML = 'Log Out <i class="fa fa-sign-out"></i>';
+      authLink.href = '#';
+      authLink.onclick = () => signOut(auth).then(() => location.reload());
+    } else {
+      authLink.innerHTML = 'Log In <i class="fa fa-sign-in"></i>';
+      authLink.href = 'join.html';
+    }
+  });
+
+  /* ----- Tier selection ----- */
+  tiers.forEach(t => t.addEventListener('click', () => {
+    tiers.forEach(x => x.classList.remove('selected'));
+    t.classList.add('selected');
+    selectedAmount = parseInt(t.dataset.amount);
+    customInput.value = '';
+  }));
+
+  /* ----- Custom amount ----- */
+  customInput.addEventListener('input', () => {
+    tiers.forEach(t => t.classList.remove('selected'));
+    selectedAmount = parseFloat(customInput.value) || 0;
+  });
+
+  /* ----- Donate ----- */
+  donateBtn.addEventListener('click', async () => {
+    if (selectedAmount < 10) {
+      showNotification('Please choose at least R10.', 'error');
+      return;
+    }
+
+    donateBtn.disabled = true;
+    donateBtn.textContent = 'Processing…';
+
+    try {
+      await addDoc(collection(db, 'donations'), {
+        amount: selectedAmount,
+        currency: 'ZAR',
+        timestamp: serverTimestamp(),
+        status: 'pending',
+        source: 'public-donate-page'
+      });
+
+      pfAmount.value = selectedAmount.toFixed(2);
+      payfastForm.submit();
+
+    } catch (e) {
+      console.error(e);
+      showNotification('Something went wrong. Try again.', 'error');
+      donateBtn.disabled = false;
+      donateBtn.textContent = 'Donate Now';
+    }
+  });
+
+  /* ----- Notification ----- */
+  function showNotification(msg, type) {
+    notification.textContent = msg;
+    notification.className = `notification ${type} show`;
+    setTimeout(() => notification.classList.remove('show'), 4000);
+  }
+
+  /* ----- Mobile menu ----- */
+  document.querySelector('.hamburger')?.addEventListener('click', () => {
+    document.querySelector('.nav-menu').classList.toggle('active');
+  });
+</script>
+</body>
+</html>

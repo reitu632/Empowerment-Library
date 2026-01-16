@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up | Empowerment</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url("Images/grunge-paint-background.jpg");
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .login-wrapper {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px ;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    .login-wrapper h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .login-wrapper input {
+      width: 100%;
+      padding: 12px 0;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    .login-wrapper button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .login-wrapper button:hover {
+      background-color: #0056b3;
+    }
+    .login-wrapper .error {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .login-wrapper .success {
+      color: green;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .login-wrapper .links {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .login-wrapper .links a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .login-wrapper .links a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 500px) {
+      .login-wrapper {
+        margin: 15px;
+        padding: 25px;
+      }
+    }
+
+     .formlogo{
+      text-align: center;
+    }
+    .formlogo img{
+      width: 25%;
+    }
+
+  </style>
+</head>
+<body>
+  
+    <div class="login-wrapper">
+      <div class="formlogo"><img src="Images/EMP.png" alt="formlogo"></div>
+      <h2>Sign Up</h2>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+      <button onclick="signup()">Sign Up</button>
+      <div class="error" id="errorMsg"></div>
+      <div class="success" id="successMsg"></div>
+
+      <div class="links">
+        <a href="join.html">Already have an account? Login</a>
+      </div>
+    </div>
+
+   <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    sendEmailVerification
+  } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc
+  } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7mRqliOrAZbvcS6jpyrOUvG1Oxd-fOVA",
+    authDomain: "empowermentlibrary-4e69a.firebaseapp.com",
+    projectId: "empowermentlibrary-4e69a",
+    storageBucket: "empowermentlibrary-4e69a.firebasestorage.app",
+    messagingSenderId: "86100116391",
+    appId: "1:86100116391:web:68a0766a05d1ea61242c82",
+    measurementId: "G-0T558LGG20"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Signup function
+  window.signup = async function () {
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+    const successMsg = document.getElementById("successMsg");
+
+    errorMsg.textContent = "";
+    successMsg.textContent = "";
+
+    if (!username || !email || !password || !confirmPassword) {
+      errorMsg.textContent = "Please fill in all fields.";
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      errorMsg.textContent = "Passwords do not match.";
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      errorMsg.textContent =
+        "Password must be at least 6 characters and contain at least one letter and one number.";
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await sendEmailVerification(user);
+
+      await setDoc(doc(db, "users", user.uid), {
+        username: username,
+        email: email,
+        role: "user",
+        createdAt: new Date().toISOString()
+      });
+
+      successMsg.textContent =
+        "Signup successful! Please check your email to verify your account.";
+
+      setTimeout(() => {
+        window.location.href = "join.html";
+      }, 4000);
+    } catch (error) {
+      console.error("Signup Error:", error);
+      errorMsg.textContent = "Signup failed: " + error.message;
+    }
+  };
+</script>
